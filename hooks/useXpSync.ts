@@ -11,7 +11,7 @@ const SYNC_INTERVAL_MS = 5_000
 export function useXpSync() {
   const flushPendingXp   = useGameStore((s) => s.flushPendingXp)
   const applyServerState = useGameStore((s) => s.applyServerState)
-  const intervalRef      = useRef<ReturnType<typeof setInterval>>()
+  const intervalRef      = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const syncMutation = useMutation({
     mutationFn: (pending: bigint) => syncXpAction(pending.toString()),

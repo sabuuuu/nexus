@@ -8,6 +8,7 @@ import { items } from './schema/items'
 import { chestTiers, chestLootTable, chestOpens } from './schema/chests'
 import { playerItems } from './schema/inventory'
 import { seasons, leaderboardEntries } from './schema/leaderboard'
+import { questTemplates, questProgress } from './schema/quests'
 import { sql } from 'drizzle-orm'
 
 config({ path: '.env.local' })
@@ -15,7 +16,7 @@ config({ path: '.env.local' })
 const connectionString = process.env.DATABASE_URL!
 const client = postgres(connectionString, { max: 1 })
 const db = drizzle(client, { 
-  schema: { users, gameState, items, chestTiers, chestLootTable, chestOpens, playerItems, seasons, leaderboardEntries } 
+  schema: { users, gameState, items, chestTiers, chestLootTable, chestOpens, playerItems, seasons, leaderboardEntries, questTemplates, questProgress } 
 })
 
 async function main() {
@@ -27,6 +28,8 @@ async function main() {
   await db.execute(sql`DELETE FROM "chest_opens"`)
   await db.execute(sql`DELETE FROM "player_items"`)
   await db.execute(sql`DELETE FROM "leaderboard_entries"`)
+  await db.execute(sql`DELETE FROM "quest_progress"`)
+  await db.execute(sql`DELETE FROM "quest_templates"`)
   await db.execute(sql`DELETE FROM "seasons"`)
   await db.execute(sql`DELETE FROM "chest_tiers"`)
   await db.execute(sql`DELETE FROM "items"`)
@@ -108,6 +111,29 @@ async function main() {
     // Legendary Chest
     { chestTierId: legendaryChest.id, itemId: h3.id, weight: 60, minLevel: 1 },
     { chestTierId: legendaryChest.id, itemId: h4.id, weight: 40, minLevel: 1 },
+  ])
+
+  // 5. Seed Quest Templates
+  console.log('Seeding Quest Templates...')
+  await db.insert(questTemplates).values([
+    // --- CLICK_COUNT ---
+    { title: 'First Strike',      description: 'Click 50 times.',         type: 'CLICK_COUNT', targetValue: 50,    rewardXp: 500   },
+    { title: 'Surge Protocol',    description: 'Click 250 times.',        type: 'CLICK_COUNT', targetValue: 250,   rewardXp: 2000  },
+    { title: 'Power Overload',    description: 'Click 1,000 times.',      type: 'CLICK_COUNT', targetValue: 1000,  rewardXp: 7500  },
+    { title: 'Core Meltdown',     description: 'Click 5,000 times.',      type: 'CLICK_COUNT', targetValue: 5000,  rewardXp: 30000 },
+    // --- CHEST_OPEN ---
+    { title: 'Intel Recovery',    description: 'Open 1 crate.',           type: 'CHEST_OPEN',  targetValue: 1,     rewardXp: 1000  },
+    { title: 'Supply Run',        description: 'Open 3 crates.',          type: 'CHEST_OPEN',  targetValue: 3,     rewardXp: 4000  },
+    { title: 'Black Market Raid', description: 'Open 10 crates.',         type: 'CHEST_OPEN',  targetValue: 10,    rewardXp: 15000 },
+    // --- LEVEL_REACH ---
+    { title: 'Initiated',         description: 'Reach Level 2.',          type: 'LEVEL_REACH', targetValue: 2,     rewardXp: 500   },
+    { title: 'Field Agent',       description: 'Reach Level 5.',          type: 'LEVEL_REACH', targetValue: 5,     rewardXp: 2500  },
+    { title: 'Elite Operative',   description: 'Reach Level 10.',         type: 'LEVEL_REACH', targetValue: 10,    rewardXp: 10000 },
+    { title: 'Specialist',        description: 'Reach Level 25.',         type: 'LEVEL_REACH', targetValue: 25,    rewardXp: 50000 },
+    // --- XP_EARN ---
+    { title: 'Energy Spike',      description: 'Earn 1,000 XP.',          type: 'XP_EARN',     targetValue: 1000,  rewardXp: 250   },
+    { title: 'Power Surge',       description: 'Earn 10,000 XP.',         type: 'XP_EARN',     targetValue: 10000, rewardXp: 2000  },
+    { title: 'Nexus Drain',       description: 'Earn 100,000 XP.',        type: 'XP_EARN',     targetValue: 100000,rewardXp: 15000 },
   ])
 
   console.log('--- ✅ SEED COMPLETE ✅ ---')

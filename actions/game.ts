@@ -6,6 +6,7 @@ import { eq, and } from 'drizzle-orm'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { levelFromTotalXp } from '@/lib/game/formulas'
 import { validateClickPayload } from '@/lib/game/anticheat'
+import { trackQuestEventAction } from './quests'
 
 const MAX_XP_PER_SYNC = BigInt(100_000)
 
@@ -112,6 +113,16 @@ export async function syncXpAction(pendingXpStr: string) {
       })
     }
   }
+
+  // Trigger meta-progression updates in the background (no await needed for UI response)
+  const clickPower = current?.clickPower || 1
+  const approximateClicks = Math.floor(Number(pendingXp) / clickPower) || 1
+  
+  Promise.all([
+    trackQuestEventAction('XP_EARN', Number(pendingXp)),
+    trackQuestEventAction('CLICK_COUNT', approximateClicks),
+    trackQuestEventAction('LEVEL_REACH', final.level, true),
+  ]).catch((err) => console.error('Quest track error:', err))
 
   return { totalXp: final.totalXp.toString(), level: final.level }
 }

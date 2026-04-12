@@ -1,4 +1,5 @@
 import { pgTable, text, integer, boolean, timestamp, unique, pgEnum } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 import { users } from './users'
 
 export const questTypeEnum = pgEnum('quest_type', [
@@ -25,4 +26,19 @@ export const questProgress = pgTable('quest_progress', {
   assignedAt:      timestamp('assigned_at').defaultNow().notNull(),
 }, (t) => ({
   uniqueUserQuestDay: unique().on(t.userId, t.questTemplateId, t.assignedAt),
+}))
+
+export const questTemplatesRelations = relations(questTemplates, ({ many }) => ({
+  progress: many(questProgress),
+}))
+
+export const questProgressRelations = relations(questProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [questProgress.userId],
+    references: [users.id],
+  }),
+  quest: one(questTemplates, {
+    fields: [questProgress.questTemplateId],
+    references: [questTemplates.id],
+  }),
 }))

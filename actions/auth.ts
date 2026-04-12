@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db/client'
-import { users, gameState } from '@/db/schema'
+import { users, gameState, seasons, leaderboardEntries } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'

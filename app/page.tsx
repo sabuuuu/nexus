@@ -5,21 +5,24 @@ import { HeroClickTarget } from '@/components/game/HeroClickTarget'
 import { XpBar } from '@/components/game/XpBar'
 import { StoreView } from '@/components/game/StoreView'
 import { LeaderboardView } from '@/components/leaderboard/LeaderboardView'
+import { QuestPanel } from '@/components/quests/QuestPanel'
 import { useXpSync } from '@/hooks/useXpSync'
 import { usePassiveIncome } from '@/hooks/usePassiveIncome'
 import { useProfile } from '@/hooks/useProfile'
-import { Zap, Activity, Trophy, ShoppingBag } from 'lucide-react'
+import { useQuestInit } from '@/hooks/useQuests'
+import { Zap, Activity, Trophy, ShoppingBag, Crosshair, Database } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { loadGameStateAction } from '@/actions/game'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GamePage() {
-  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'rankings'>('mission')
+  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'rankings' | 'ops'>('mission')
   const applyServerState = useGameStore((s) => s.applyServerState)
 
   // Initialize game loops
   useXpSync()
   usePassiveIncome()
+  useQuestInit()
 
   useEffect(() => {
     async function init() {
@@ -55,7 +58,7 @@ export default function GamePage() {
 
         <div className="flex gap-4">
           <StatMini icon={<Zap className="w-4 h-4" />} label="Click Pwr" value={clickPower} />
-          <StatMini icon={<Activity className="w-4 h-4" />} label="Passive" value={`${passiveRate}/s`} />
+          <StatMini icon={<Database className="w-4 h-4" />} label="Bank" value={currentXp.toLocaleString()} />
         </div>
       </div>
 
@@ -109,6 +112,18 @@ export default function GamePage() {
               <LeaderboardView />
             </motion.div>
           )}
+
+          {activeTab === 'ops' && (
+            <motion.div
+              key="ops"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-2xl mx-auto px-4 pb-24"
+            >
+              <QuestPanel />
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
@@ -128,6 +143,12 @@ export default function GamePage() {
             onClick={() => setActiveTab('rankings')}
             icon={<Trophy className="w-5 h-5" />}
             label="Rankings"
+          />
+          <NavButton
+            active={activeTab === 'ops'}
+            onClick={() => setActiveTab('ops')}
+            icon={<Crosshair className="w-5 h-5" />}
+            label="Ops"
           />
           <div className="w-[1px] h-8 bg-primary/20 mx-2 self-center rotate-12" />
           <NavButton

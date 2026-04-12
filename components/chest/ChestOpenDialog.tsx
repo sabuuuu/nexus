@@ -55,14 +55,14 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md bg-[#070B14] border-2 border-primary/20 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,1)]">
-        <DialogHeader className="p-6 bg-primary/5 border-b border-primary/10">
-          <DialogTitle className="font-display tracking-[0.2em] text-2xl text-white flex items-center gap-3">
+        <DialogHeader className="p-6 bg-primary/5 border-b border-primary/10 flex flex-col items-center justify-center">
+          <DialogTitle className="font-display tracking-[0.2em] text-2xl text-white flex items-center justify-center gap-3 w-full text-center">
             <Box className="text-primary w-6 h-6" />
             {chestName} CLEARANCE
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col items-center gap-8 p-10 relative">
+        <div className="flex flex-col items-center justify-center gap-8 p-10 relative w-full overflow-hidden">
           {/* Background Tech Details */}
           <div className="absolute inset-0 opacity-5 pointer-events-none">
             <div className="absolute top-0 right-0 w-32 h-32 border-t border-r border-primary" />
@@ -146,7 +146,7 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
                 size="lg"
                 disabled={isPending}
                 onClick={() => openChest()}
-                className="w-full h-14 font-display text-xl tracking-[0.2em] rounded-none border-b-4 border-primary/50 cursor-pointer transition-all active:translate-y-1"
+                className="w-full h-14 font-display text-md tracking-[0.2em] rounded-none border-b-4 border-primary/50 cursor-pointer transition-all active:translate-y-1"
               >
                 {isPending ? (
                   <>

@@ -52,12 +52,12 @@ export default function GamePage() {
       {/* Immersive HUD Layers */}
       <GlobalHud />
       
-      {/* Background — full screen, no blur offset */}
+      {/* Background — full screen, fixed to viewport */}
       <div 
-        className="absolute inset-0 bg-[url('/bg/city_spire.png')] bg-cover bg-center bg-no-repeat opacity-50 pointer-events-none"
+        className="fixed inset-0 bg-[url('/bg/city_spire.png')] bg-cover bg-center bg-no-repeat opacity-50 pointer-events-none"
       />
-      {/* Dark Overlay for better contrast */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none z-0" />
+      {/* Dark Overlay — fixed to viewport */}
+      <div className="fixed inset-0 bg-black/40 pointer-events-none z-0" />
 
       <main className="flex-1 flex flex-col items-center p-6 md:p-12 max-w-7xl mx-auto w-full gap-8 relative z-10">
 

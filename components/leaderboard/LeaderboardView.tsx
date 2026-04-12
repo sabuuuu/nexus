@@ -50,7 +50,7 @@ export function LeaderboardView() {
                <div>
                   <h3 className="font-display text-2xl text-white truncate max-w-[150px]">{entry.username || 'ANON_PILOT'}</h3>
                   <p className="text-xs font-mono text-primary font-bold uppercase tracking-widest mt-1">
-                    {parseInt(entry.totalXp).toLocaleString()} XP
+                    {parseInt(entry.totalXp).toLocaleString()} CAREER_XP
                   </p>
                </div>
                <div className="absolute top-2 left-2 px-2 py-1 bg-black/80 border border-white/10 font-mono text-xs font-bold text-white italic">
@@ -67,8 +67,8 @@ export function LeaderboardView() {
           <div className="flex items-center gap-6">
             <span className="font-display text-3xl text-primary italic"># {myRank.rank}</span>
             <div className="flex flex-col">
-              <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-widest">Your Current Protocol</span>
-              <span className="font-mono text-white text-lg font-bold">{(parseInt(myRank.totalXp)).toLocaleString()} XP</span>
+              <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-widest">Your Station Record</span>
+              <span className="font-mono text-white text-lg font-bold">{(parseInt(myRank.totalXp)).toLocaleString()} CAREER_XP</span>
             </div>
           </div>
           <div className="flex items-center gap-2 text-primary font-bold font-mono text-xs uppercase tracking-widest animate-pulse">
@@ -97,7 +97,7 @@ export function LeaderboardView() {
                <span className="font-mono text-lg text-primary font-bold tabular-nums">
                  {parseInt(entry.totalXp).toLocaleString()} XP
                </span>
-               <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest mt-1 italic">Authorized</p>
+               <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest mt-1 italic">Total Protocol</p>
             </div>
           </div>
         ))}

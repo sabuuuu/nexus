@@ -1,4 +1,5 @@
 import { pgTable, text, integer, boolean, timestamp, unique } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 import { users } from './users'
 import { items } from './items'
 
@@ -12,4 +13,15 @@ export const playerItems = pgTable('player_items', {
   obtainedAt: timestamp('obtained_at').defaultNow().notNull(),
 }, (t) => ({
   uniqueUserItem: unique().on(t.userId, t.itemId),
+}))
+
+export const playerItemsRelations = relations(playerItems, ({ one }) => ({
+  user: one(users, {
+    fields: [playerItems.userId],
+    references: [users.id],
+  }),
+  item: one(items, {
+    fields: [playerItems.itemId],
+    references: [items.id],
+  }),
 }))

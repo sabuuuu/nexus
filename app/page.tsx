@@ -3,14 +3,17 @@
 import { useGameStore } from '@/store/gameStore'
 import { HeroClickTarget } from '@/components/game/HeroClickTarget'
 import { XpBar } from '@/components/game/XpBar'
+import { StoreView } from '@/components/game/StoreView'
 import { useXpSync } from '@/hooks/useXpSync'
 import { usePassiveIncome } from '@/hooks/usePassiveIncome'
 import { useProfile } from '@/hooks/useProfile'
-import { Zap, Activity, Users } from 'lucide-react'
-import { useEffect } from 'react'
+import { Zap, Activity, Users, ShoppingBag } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { loadGameStateAction } from '@/actions/game'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GamePage() {
+  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'agents'>('mission')
   const applyServerState = useGameStore((s) => s.applyServerState)
 
   // Initialize game loops
@@ -38,13 +41,13 @@ export default function GamePage() {
   const { clickPower, passiveRate, currentXp } = useGameStore()
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-between p-6 md:p-12 max-w-7xl mx-auto w-full gap-12 overflow-hidden">
+    <main className="flex-1 flex flex-col items-center p-6 md:p-12 max-w-7xl mx-auto w-full gap-8 overflow-y-auto overflow-x-hidden">
 
       {/* Top Header - User Info & Global Context */}
-      <div className="w-full flex justify-between items-start">
+      <div className="w-full flex justify-between items-start flex-shrink-0">
         <div className="flex flex-col gap-1">
           <span className="text-[10px] font-mono text-primary/60 tracking-[0.3em] uppercase">Authored Session</span>
-          <h2 className="font-display text-3xl text-white tracking-widest uppercase truncate max-w-[200px]">
+          <h2 className="font-display text-4xl text-white tracking-widest uppercase truncate max-w-[200px] italic">
             {profile?.username || 'GUEST_PILOT'}
           </h2>
         </div>
@@ -55,36 +58,85 @@ export default function GamePage() {
         </div>
       </div>
 
-      {/* Centerpiece - The Hero Interaction Area */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-8 py-12">
-        <div className="relative">
-          {/* Decorative scanner ring */}
-          <div className="absolute inset-0 -m-8 border border-primary/10 rounded-full animate-[spin_10s_linear_infinite]" />
-          <div className="absolute inset-0 -m-12 border border-primary/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
+      <div className="flex-1 w-full flex flex-col items-center">
+        <AnimatePresence mode="wait">
+          {activeTab === 'mission' && (
+            <motion.div
+              key="mission"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              className="flex-1 flex flex-col items-center justify-center gap-12 w-full py-12"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 -m-8 border border-primary/10 rounded-full animate-[spin_10s_linear_infinite]" />
+                <div className="absolute inset-0 -m-12 border border-primary/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
+                <HeroClickTarget />
+              </div>
 
-          <HeroClickTarget />
-        </div>
+              <div className="flex flex-col items-center gap-2 mt-10">
+                <span className="font-mono text-5xl font-black tracking-tighter text-white tabular-nums">
+                  {currentXp.toLocaleString()} XP
+                </span>
+                <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.4em]">
+                  Tap to generate energy surge
+                </p>
+              </div>
+            </motion.div>
+          )}
 
-        <div className="flex flex-col items-center gap-2 mt-12">
-          <span className="font-mono text-3xl font-bold tracking-tighter text-white">
-            {currentXp.toLocaleString()} XP
-          </span>
-          <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-            Tap to generate energy surge
-          </p>
-        </div>
+          {activeTab === 'store' && (
+            <motion.div
+              key="store"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full"
+            >
+              <StoreView />
+            </motion.div>
+          )}
+
+          {activeTab === 'agents' && (
+            <motion.div
+              key="agents"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full flex flex-col items-center justify-center py-24 text-center"
+            >
+              <Users className="w-12 h-12 text-white/10 mb-4" />
+              <p className="font-display text-2xl text-white/20 uppercase tracking-[0.2em]">Roster Offline</p>
+              <p className="font-mono text-xs text-white/10 uppercase mt-2">Acquire hardware in the store to populate</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Bottom UI - Progress and Navigation */}
-      <div className="w-full flex flex-col items-center gap-8">
+      <div className="w-full flex flex-col items-center gap-8 flex-shrink-0">
         <XpBar />
 
-        {/* Basic Footer Nav Placeholders */}
-        <nav className="flex gap-2 p-1 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
-          <NavButton active icon={<Zap className="w-5 h-5" />} label="Mission" />
-          <NavButton icon={<Users className="w-5 h-5" />} label="Agents" />
-          <div className="w-px h-6 bg-white/10 mx-2 self-center" />
-          <NavButton icon={<div className="w-5 h-5 border-2 border-dashed border-primary/40 rounded-sm" />} label="Store" />
+        <nav className="flex gap-2 p-1 bg-black/40 border-2 border-primary/20 rounded-none backdrop-blur-xl mb-4">
+          <NavButton
+            active={activeTab === 'mission'}
+            onClick={() => setActiveTab('mission')}
+            icon={<Zap className="w-5 h-5" />}
+            label="Mission"
+          />
+          <NavButton
+            active={activeTab === 'agents'}
+            onClick={() => setActiveTab('agents')}
+            icon={<Users className="w-5 h-5" />}
+            label="Garage"
+          />
+          <div className="w-[1px] h-8 bg-primary/20 mx-2 self-center rotate-12" />
+          <NavButton
+            active={activeTab === 'store'}
+            onClick={() => setActiveTab('store')}
+            icon={<ShoppingBag className="w-5 h-5" />}
+            label="Market"
+          />
         </nav>
       </div>
     </main>
@@ -93,24 +145,36 @@ export default function GamePage() {
 
 function StatMini({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-2 bg-primary/5 border border-primary/10 rounded-xl backdrop-blur-sm">
+    <div className="flex items-center gap-4 px-5 py-3 bg-primary/5 border-2 border-primary/10 rounded-none backdrop-blur-md">
       <div className="text-primary">{icon}</div>
       <div className="flex flex-col">
-        <span className="text-[8px] font-mono text-muted-foreground uppercase tracking-wider">{label}</span>
-        <span className="font-mono text-sm font-bold text-white leading-tight">{value}</span>
+        <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest">{label}</span>
+        <span className="font-mono text-lg font-black text-white leading-tight tabular-nums">{value}</span>
       </div>
     </div>
   )
 }
 
-function NavButton({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) {
+function NavButton({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick: () => void }) {
   return (
-    <button className={`
-      flex flex-col items-center gap-1 px-6 py-3 rounded-xl transition-all
-      ${active ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.4)]' : 'text-muted-foreground hover:bg-white/5 hover:text-white'}
-    `}>
-      {icon}
-      <span className="text-[9px] font-mono uppercase font-bold tracking-wider">{label}</span>
+    <button
+      onClick={onClick}
+      className={`
+        flex flex-col items-center gap-1 px-8 py-3 transition-all relative group
+        ${active ? 'text-primary' : 'text-white/40 hover:text-white/80'}
+      `}
+    >
+      <div className={`relative ${active ? 'animate-pulse' : ''}`}>
+        {icon}
+      </div>
+      <span className="text-[10px] font-mono uppercase font-black tracking-widest">{label}</span>
+
+      {active && (
+        <motion.div
+          layoutId="nav_active"
+          className="absolute inset-0 bg-primary/5 border-b-2 border-primary"
+        />
+      )}
     </button>
   )
 }

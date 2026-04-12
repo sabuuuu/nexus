@@ -1,8 +1,8 @@
-import { pgTable, text, integer, pgEnum } from 'drizzle-orm/pg-core'
-
-export const itemTypeEnum  = pgEnum('item_type',  ['CLICK_BOOST', 'PASSIVE_BOOST', 'COSMETIC', 'HERO'])
-export const rarityEnum    = pgEnum('rarity',     ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'])
-export const heroClassEnum = pgEnum('hero_class', ['ELECTRIC', 'CRIMSON', 'TOXIC', 'SOLAR'])
+import { pgTable, text, integer } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { chestLootTable } from './chests'
+import { playerItems } from './inventory'
+import { itemTypeEnum, rarityEnum, heroClassEnum } from './enums'
 
 export const items = pgTable('items', {
   id:          text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -15,3 +15,8 @@ export const items = pgTable('items', {
   statValue:   integer('stat_value').default(0).notNull(),
   heroClass:   heroClassEnum('hero_class'),
 })
+
+export const itemsRelations = relations(items, ({ many }) => ({
+  lootEntries: many(chestLootTable),
+  playerItems: many(playerItems),
+}))

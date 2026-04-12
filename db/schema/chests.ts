@@ -1,5 +1,6 @@
 import { pgTable, text, integer, timestamp } from 'drizzle-orm/pg-core'
-import { rarityEnum } from './items'
+import { relations } from 'drizzle-orm'
+import { rarityEnum } from './enums'
 import { items } from './items'
 import { users } from './users'
 
@@ -10,6 +11,10 @@ export const chestTiers = pgTable('chest_tiers', {
   minLevel: integer('min_level').default(1).notNull(),
 })
 
+export const chestTiersRelations = relations(chestTiers, ({ many }) => ({
+  lootTable: many(chestLootTable),
+}))
+
 export const chestLootTable = pgTable('chest_loot_table', {
   id:           text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   chestTierId:  text('chest_tier_id').notNull().references(() => chestTiers.id),
@@ -17,6 +22,17 @@ export const chestLootTable = pgTable('chest_loot_table', {
   weight:       integer('weight').notNull(),   // relative weight for RNG
   minLevel:     integer('min_level').default(1).notNull(),
 })
+
+export const chestLootTableRelations = relations(chestLootTable, ({ one }) => ({
+  chestTier: one(chestTiers, {
+    fields: [chestLootTable.chestTierId],
+    references: [chestTiers.id],
+  }),
+  item: one(items, {
+    fields: [chestLootTable.itemId],
+    references: [items.id],
+  }),
+}))
 
 export const chestOpens = pgTable('chest_opens', {
   id:             text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),

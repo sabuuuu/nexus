@@ -6,6 +6,7 @@ import { XpBar } from '@/components/game/XpBar'
 import { StoreView } from '@/components/game/StoreView'
 import { LeaderboardView } from '@/components/leaderboard/LeaderboardView'
 import { QuestPanel } from '@/components/quests/QuestPanel'
+import { SettingsDialog } from '@/components/game/SettingsDialog'
 import { useXpSync } from '@/hooks/useXpSync'
 import { usePassiveIncome } from '@/hooks/usePassiveIncome'
 import { useProfile } from '@/hooks/useProfile'
@@ -56,9 +57,10 @@ export default function GamePage() {
           </h2>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <StatMini icon={<Zap className="w-4 h-4" />} label="Click Pwr" value={clickPower} />
           <StatMini icon={<Database className="w-4 h-4" />} label="Bank" value={currentXp.toLocaleString()} />
+          <SettingsDialog />
         </div>
       </div>
 
@@ -78,7 +80,7 @@ export default function GamePage() {
                 <HeroClickTarget />
               </div>
 
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-2 mt-6">
                 <span className="font-mono text-5xl font-black tracking-tighter text-white tabular-nums">
                   {currentXp.toLocaleString()} XP
                 </span>

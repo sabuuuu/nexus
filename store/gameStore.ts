@@ -1,6 +1,7 @@
-import { computeClickPower, computePassiveRate } from '@/lib/game/formulas'
+import { computeClickPower, computePassiveRate, levelFromTotalXp } from '@/lib/game/formulas'
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
+import { SoundManager } from '@/lib/sound/soundManager'
 
 
 interface EquippedItem {
@@ -36,10 +37,18 @@ export const useGameStore = create<GameStore>()(
 
     registerClick() {
       const power = BigInt(get().clickPower)
+      const newTotal = get().totalXp + power
+      const newLevel = levelFromTotalXp(newTotal)
+
+      if (newLevel > get().level) {
+        SoundManager.play('levelUp')
+      }
+
       set((s) => ({
-        totalXp: s.totalXp + power,
+        totalXp: newTotal,
         currentXp: s.currentXp + power,
         pendingXp: s.pendingXp + power,
+        level: newLevel,
       }))
     },
 

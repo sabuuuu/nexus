@@ -1,26 +1,31 @@
-import { Howl } from 'howler'
+import { Howl, Howler } from 'howler'
+
+const initSound = (src: string, volume: number) => {
+  if (typeof window === 'undefined') return null as unknown as Howl
+  return new Howl({ src: [src], volume })
+}
 
 const sounds = {
-  click:     new Howl({ src: ['/sounds/click.webm'],      volume: 0.4 }),
-  levelUp:   new Howl({ src: ['/sounds/level-up.webm'],   volume: 0.8 }),
-  chestOpen: new Howl({ src: ['/sounds/chest-open.webm'], volume: 0.9 }),
-  legendary: new Howl({ src: ['/sounds/legendary.webm'],  volume: 1.0 }),
+  click: initSound('/sounds/click.webm', 0.4),
+  levelUp: initSound('/sounds/level-up.webm', 0.8),
+  chestOpen: initSound('/sounds/chest-open.webm', 0.9),
+  legendary: initSound('/sounds/legendary.webm', 1.0),
 }
 
 export const SoundManager = {
   play: (key: keyof typeof sounds) => {
-    // Only play if audio file exists and we are in browser
-    if (typeof window !== 'undefined') {
-      try {
-        sounds[key].play()
-      } catch (e) {
-        console.warn(`Failed to play sound: ${key}`, e)
-      }
+    try {
+      if (sounds[key]) sounds[key].play()
+    } catch (e) {
+      console.warn(`Sound ${key} failed to play`, e)
     }
   },
   setMuted: (muted: boolean) => {
-    if (typeof window !== 'undefined') {
-      Object.values(sounds).forEach((s) => s.mute(muted))
-    }
+    Object.values(sounds).forEach((s) => {
+      if (s) s.mute(muted)
+    })
   },
+  setVolume: (volume: number) => {
+    Howler.volume(volume / 100)
+  }
 }

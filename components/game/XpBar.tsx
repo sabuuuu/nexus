@@ -6,7 +6,7 @@ import { Zap } from 'lucide-react'
 
 export function XpBar() {
   const { totalXp, level } = useGameStore()
-  const progress = xpProgressInLevel(totalXp, level) * 100
+  const progress = Math.min(100, Math.max(0, xpProgressInLevel(totalXp, level) * 100))
 
   return (
     <div className="w-full max-w-3xl space-y-4 px-2">

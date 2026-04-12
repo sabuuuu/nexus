@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/cron/season-snapshot", "schedule": "0 0 * * *" }
+  ]
+}

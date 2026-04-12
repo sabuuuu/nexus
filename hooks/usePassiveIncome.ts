@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 import { useGameStore } from '@/store/gameStore'
+import { levelFromTotalXp } from '@/lib/game/formulas'
+import { SoundManager } from '@/lib/sound/soundManager'
 
 const TICK_MS = 1_000
 
@@ -15,11 +17,21 @@ export function usePassiveIncome() {
     const id = setInterval(() => {
       if (rateRef.current > 0) {
         const gain = BigInt(rateRef.current)
-        useGameStore.setState((s) => ({
-          totalXp:   s.totalXp + gain,
-          currentXp: s.currentXp + gain,
-          pendingXp: s.pendingXp + gain,
-        }))
+        useGameStore.setState((s) => {
+          const newTotal = s.totalXp + gain
+          const newLevel = levelFromTotalXp(newTotal)
+          
+          if (newLevel > s.level) {
+            SoundManager.play('levelUp')
+          }
+
+          return {
+            totalXp:   newTotal,
+            currentXp: s.currentXp + gain,
+            pendingXp: s.pendingXp + gain,
+            level:     newLevel,
+          }
+        })
       }
     }, TICK_MS)
     

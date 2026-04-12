@@ -89,3 +89,23 @@ export async function getUserProfileAction() {
 
   return profile ?? null
 }
+
+export async function linkEmailAction(email: string) {
+  const supabase = await createSupabaseServer()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  const cleanEmail = email.trim().toLowerCase()
+  if (!cleanEmail.includes('@')) throw new Error('Invalid email protocol')
+
+  await db
+    .update(users)
+    .set({
+      email: cleanEmail,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, user.id))
+
+  revalidatePath('/')
+  return { success: true }
+}

@@ -7,6 +7,8 @@ import { StoreView } from '@/components/game/StoreView'
 import { LeaderboardView } from '@/components/leaderboard/LeaderboardView'
 import { QuestPanel } from '@/components/quests/QuestPanel'
 import { SettingsDialog } from '@/components/game/SettingsDialog'
+import { GlobalStabilityBar } from '@/components/game/GlobalStabilityBar'
+import { GlobalHud } from '@/components/game/GlobalHud'
 import { useXpSync } from '@/hooks/useXpSync'
 import { usePassiveIncome } from '@/hooks/usePassiveIncome'
 import { useProfile } from '@/hooks/useProfile'
@@ -46,7 +48,18 @@ export default function GamePage() {
   const { clickPower, passiveRate, currentXp } = useGameStore()
 
   return (
-    <main className="flex-1 flex flex-col items-center p-6 md:p-12 max-w-7xl mx-auto w-full gap-8 overflow-y-auto overflow-x-hidden">
+    <div className="flex flex-col h-screen bg-[#070B14] relative overflow-y-auto overflow-x-hidden">
+      {/* Immersive HUD Layers */}
+      <GlobalHud />
+      
+      {/* Background — full screen, no blur offset */}
+      <div 
+        className="absolute inset-0 bg-[url('/bg/city_spire.png')] bg-cover bg-center bg-no-repeat opacity-50 pointer-events-none"
+      />
+      {/* Dark Overlay for better contrast */}
+      <div className="absolute inset-0 bg-black/40 pointer-events-none z-0" />
+
+      <main className="flex-1 flex flex-col items-center p-6 md:p-12 max-w-7xl mx-auto w-full gap-8 relative z-10">
 
       {/* Top Header - User Info & Global Context */}
       <div className="w-full flex justify-between items-start flex-shrink-0">
@@ -72,8 +85,11 @@ export default function GamePage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
-              className="flex-1 flex flex-col items-center justify-center gap-12 w-full py-12"
+              className="flex-1 flex flex-col items-center justify-center gap-12 w-full py-6"
             >
+              <GlobalStabilityBar />
+
+              <div className="flex-1 flex flex-col items-center justify-center gap-12 w-full">
               <div className="relative">
                 <div className="absolute inset-0 -m-8 border border-primary/10 rounded-full animate-[spin_10s_linear_infinite]" />
                 <div className="absolute inset-0 -m-12 border border-primary/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
@@ -88,6 +104,7 @@ export default function GamePage() {
                   Tap to generate energy surge
                 </p>
               </div>
+            </div>
             </motion.div>
           )}
 
@@ -162,6 +179,7 @@ export default function GamePage() {
         </nav>
       </div>
     </main>
+    </div>
   )
 }
 

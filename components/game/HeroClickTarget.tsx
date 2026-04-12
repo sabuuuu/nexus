@@ -5,34 +5,37 @@ import { useGameStore } from '@/store/gameStore'
 import { SoundManager } from '@/lib/sound/soundManager'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useWorldBoss } from '@/hooks/useWorldBoss'
 
 interface ClickParticle {
-  id:    number
-  x:     number
-  y:     number
+  id: number
+  x: number
+  y: number
   value: number
 }
 
 export function HeroClickTarget() {
   const registerClick = useGameStore((s) => s.registerClick)
-  const clickPower    = useGameStore((s) => s.clickPower)
-  const [particles,  setParticles] = useState<ClickParticle[]>([])
-  const [isPressed,  setIsPressed] = useState(false)
+  const clickPower = useGameStore((s) => s.clickPower)
+  const { damageBoss } = useWorldBoss()
+  const [particles, setParticles] = useState<ClickParticle[]>([])
+  const [isPressed, setIsPressed] = useState(false)
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     registerClick()
+    damageBoss(clickPower)
     SoundManager.play('click')
 
     const rect = e.currentTarget.getBoundingClientRect()
     const particle: ClickParticle = {
-      id:    Date.now() + Math.random(),
-      x:     e.clientX - rect.left,
-      y:     e.clientY - rect.top,
+      id: Date.now() + Math.random(),
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
       value: clickPower,
     }
     setParticles((prev) => [...prev, particle])
     setTimeout(() => setParticles((prev) => prev.filter((p) => p.id !== particle.id)), 800)
-  }, [registerClick, clickPower])
+  }, [registerClick, clickPower, damageBoss])
 
   return (
     <div className="relative select-none">
@@ -42,44 +45,60 @@ export function HeroClickTarget() {
         onMouseUp={() => setIsPressed(false)}
         onMouseLeave={() => setIsPressed(false)}
         className={cn(
-          'relative w-64 h-64 rounded-full transition-all duration-75 cursor-pointer flex items-center justify-center overflow-hidden',
-          'bg-primary/10',
-          'border-2 border-primary/40 hover:border-primary',
-          'shadow-[0_0_40px_hsl(var(--primary)/0.3)]',
-          isPressed && 'scale-95 shadow-[0_0_20px_hsl(var(--primary)/0.5)]'
+          'relative w-[340px] h-[340px] transition-all duration-75 cursor-pointer flex items-center justify-center',
+          isPressed && 'scale-95'
         )}
-        aria-label="Click to earn XP"
+        aria-label="Hack the Overseer"
       >
-        {/* Placeholder Hero art */}
-        <div className="text-64 relative z-10">⚡</div>
-        
-        {/* Animated background glow */}
-        <motion.div 
+        {/* THE OVERSEER BOSS ASSET */}
+        <motion.div
           animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
+            y: [0, -15, 0],
+            rotate: [0, 0.5, 0, -0.5, 0]
           }}
           transition={{
-            duration: 4,
+            duration: 8,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"
+          className="absolute inset-0 z-10"
+        >
+          <img
+            src="/overseer/boss.png"
+            alt="The Overseer"
+            className="w-full h-full object-contain filter drop-shadow-[0_0_35px_rgba(59,130,246,0.4)] mix-blend-screen"
+          />
+        </motion.div>
+
+        {/* Pulsing Energy Core */}
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.1, 0.3, 0.1],
+          }}
+          transition={{ duration: 4, repeat: Infinity }}
+          className="absolute w-56 h-56 bg-primary/20 blur-[90px] rounded-full z-0"
         />
       </button>
 
-      {/* Click particles */}
+      {/* Animated Hacking Spark Particles (Sprite Sheet) */}
       <AnimatePresence>
         {particles.map((p) => (
-          <motion.span
+          <motion.div
             key={p.id}
-            initial={{ y: p.y, x: p.x, opacity: 1, scale: 0.5 }}
-            animate={{ y: p.y - 100, opacity: 0, scale: 1.5 }}
+            initial={{ left: p.x, top: p.y, opacity: 1, scale: 0.5 }}
+            animate={{ top: p.y - 140, opacity: 0, scale: 1.4 }}
             exit={{ opacity: 0 }}
-            className="pointer-events-none absolute font-display font-bold text-2xl text-primary drop-shadow-[0_0_8px_hsl(var(--primary))]"
+            className="pointer-events-none absolute z-50 flex flex-col items-center"
           >
-            +{p.value}
-          </motion.span>
+            {/* THE 4-FRAME SPARK ANIMATION */}
+            <div
+              className="w-[100px] h-[100px] bg-contain bg-center bg-no-repeat animate-hack-spark"
+            />
+            <span className="font-display font-bold text-3xl text-primary -mt-6 drop-shadow-[0_0_12px_#3B82F6]">
+              +{p.value}
+            </span>
+          </motion.div>
         ))}
       </AnimatePresence>
     </div>

@@ -11,8 +11,29 @@ const QUEST_ICONS: Record<string, React.ReactNode> = {
   XP_EARN:     <Target className="w-4 h-4" />,
 }
 
+import { useEffect, useState } from 'react'
+
 export function QuestPanel() {
   const { data: quests, isLoading } = useQuests()
+  const [timeLeft, setTimeLeft] = useState('')
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date()
+      const nextMidnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0))
+      const diff = nextMidnight.getTime() - now.getTime()
+
+      const hours = Math.floor(diff / (1000 * 60 * 60))
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
+      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`)
+    }
+
+    updateCountdown()
+    const timer = setInterval(updateCountdown, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   if (isLoading) {
     return (
@@ -121,10 +142,10 @@ export function QuestPanel() {
       </div>
 
       {/* Daily Reset Timer */}
-      <div className="flex justify-between items-center py-3 px-4 bg-white/5 border border-white/5 text-[10px] font-mono text-white/30 uppercase tracking-widest">
+      <div className="flex justify-between items-center py-3 px-4 bg-white/5 border border-white/5 text-[10px] font-mono text-white/30 uppercase tracking-widest leading-none">
         <span>Mission Refresh</span>
-        <span className="text-primary flex items-center gap-2 animate-pulse">
-          <Clock className="w-3 h-3" /> 00:00 UTC
+        <span className="text-primary flex items-center gap-2 font-black tabular-nums transition-all">
+          <Clock className="w-3 h-3" /> {timeLeft || 'Calculating...'} UTC
         </span>
       </div>
     </div>

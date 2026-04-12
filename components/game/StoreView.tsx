@@ -68,11 +68,25 @@ export function StoreView() {
                 </div>
 
                 <div className="p-8 flex flex-col items-center gap-6">
+                  {/* Chest Asset Preview */}
                   <div className={`
-                    w-24 h-24 flex items-center justify-center border-4 rounded-3xl transition-transform duration-500
-                    ${isLocked ? 'border-white/10 bg-white/5' : 'border-primary/30 bg-primary/5 hover:rotate-[10deg] hover:scale-110'}
+                    relative size-52 flex items-center justify-center transition-transform duration-500
+                    ${!isLocked && 'hover:scale-110'}
                   `}>
-                    <Box className={`w-12 h-12 ${isLocked ? 'text-white/10' : 'text-primary'}`} />
+                    {isLocked ? (
+                      <div className="w-full h-full border-4 border-white/10 bg-white/5 flex items-center justify-center">
+                        <Lock className="w-10 h-10 text-white/10" />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
+                        <img
+                          src={`/chests/${chest.name.toLowerCase()}.png`}
+                          alt={chest.name}
+                          className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                        />
+                      </>
+                    )}
                   </div>
 
                   <div className="w-full space-y-4">

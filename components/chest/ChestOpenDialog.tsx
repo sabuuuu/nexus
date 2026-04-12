@@ -16,6 +16,7 @@ import { openChestAction } from '@/actions/chests'
 import { SoundManager } from '@/lib/sound/soundManager'
 import { toast } from 'sonner'
 import { Zap, Box, Loader2, Sparkles } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface Props {
   chestTierId: string
@@ -75,7 +76,7 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 1.5, opacity: 0, filter: 'blur(20px)' }}
-                className="relative w-48 h-48 flex items-center justify-center"
+                className="relative size-64 flex items-center justify-center"
               >
                 {/* Visual pulse for pending state */}
                 {isPending && (
@@ -86,8 +87,15 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
                   />
                 )}
 
-                <div className="relative z-10 p-8 bg-black/60 border-4 border-primary/40 rounded-3xl shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                  <Box className={`w-24 h-24 ${isPending ? 'text-primary animate-bounce' : 'text-white/20'}`} />
+                <div className="relative z-10 overflow-hidden">
+                  <img
+                    src={`/chests/${chestName?.toLowerCase() || 'common'}.png`}
+                    alt="Data Crate"
+                    className={cn(
+                      "size-64 object-contain mix-blend-screen transition-all",
+                      isPending && "animate-bounce scale-110"
+                    )}
+                  />
                 </div>
               </motion.div>
             ) : (

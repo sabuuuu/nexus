@@ -71,7 +71,24 @@
     0% { transform: translateY(0); opacity: 1; }
     100% { transform: translateY(-50px); opacity: 0; }
   }
+  @keyframes hack-spark {
+    0%, 24.9% { background-image: url('/particles/spark-1.png'); }
+    25%, 49.9% { background-image: url('/particles/spark-2.png'); }
+    50%, 74.9% { background-image: url('/particles/spark-3.png'); }
+    75%, 100% { background-image: url('/particles/spark-4.png'); }
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes v-scanline {
+    0% { top: -10%; }
+    100% { top: 110%; }
+  }
   --animate-float-up: float-up 0.8s ease-out forwards;
+  --animate-hack-spark: hack-spark 0.4s infinite;
+  --animate-shimmer: shimmer 2s infinite linear;
+  --animate-scanline: v-scanline 8s linear infinite;
 }
 
 :root {
@@ -131,5 +148,20 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-ui);
+  }
+
+  /* Custom Cyberpunk Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.2);
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
   }
 }

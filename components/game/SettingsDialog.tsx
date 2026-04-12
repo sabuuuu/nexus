@@ -43,16 +43,14 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="flex items-center gap-4 px-5 py-3 bg-primary/5 border-2 border-primary/10 rounded-none backdrop-blur-md hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer text-left group">
-          <div className="text-primary group-hover:animate-pulse">
-            <Settings className="w-4 h-4" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest group-hover:text-primary/70 transition-colors">System</span>
-            <span className="font-mono text-lg font-black text-white leading-tight uppercase group-hover:text-primary transition-colors">Config</span>
-          </div>
-        </button>
+      <DialogTrigger className="flex items-center gap-4 px-5 py-3 bg-primary/5 border-2 border-primary/10 rounded-none backdrop-blur-md hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer text-left group">
+        <div className="text-primary group-hover:animate-pulse">
+          <Settings className="w-4 h-4" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest group-hover:text-primary/70 transition-colors">System</span>
+          <span className="font-mono text-lg font-black text-white leading-tight uppercase group-hover:text-primary transition-colors">Config</span>
+        </div>
       </DialogTrigger>
       
       <DialogContent className="max-w-md bg-[#070B14] border border-primary/20">

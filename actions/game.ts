@@ -1,8 +1,8 @@
 'use server'
 
 import { db } from '@/db/client'
-import { gameState, leaderboardEntries, seasons } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { gameState, leaderboardEntries, seasons, worldBoss } from '@/db/schema'
+import { eq, and, sql } from 'drizzle-orm'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { levelFromTotalXp } from '@/lib/game/formulas'
 import { validateClickPayload } from '@/lib/game/anticheat'
@@ -139,4 +139,58 @@ export async function loadGameStateAction() {
     .limit(1)
 
   return state ?? null
+}
+
+export async function getWorldBossAction() {
+  const [boss] = await db.select().from(worldBoss).where(eq(worldBoss.id, 'current_boss')).limit(1)
+  return boss ?? null
+}
+
+export async function damageWorldBossAction(damageStr: string) {
+  const supabase = await createSupabaseServer()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  const damage = BigInt(damageStr)
+  if (damage <= BigInt(0)) return
+
+  return await db.transaction(async (tx) => {
+    const [boss] = await tx
+      .select()
+      .from(worldBoss)
+      .where(eq(worldBoss.id, 'current_boss'))
+      .limit(1)
+
+    if (!boss) return null
+
+    let newStability = boss.currentStability - damage
+    let newLevel = boss.level
+    let newMax = boss.maxStability
+
+    // Boss Reset Logic (Evolution)
+    if (newStability <= BigInt(0)) {
+      newLevel += 1
+      newMax = BigInt(Math.floor(Number(boss.maxStability) * 1.5))
+      newStability = newMax
+      
+      // Optional: Log this massive event or reward online players
+    }
+
+    const [updated] = await tx
+      .update(worldBoss)
+      .set({
+        currentStability: newStability,
+        level: newLevel,
+        maxStability: newMax,
+        updatedAt: new Date(),
+      })
+      .where(eq(worldBoss.id, 'current_boss'))
+      .returning()
+
+    return {
+      currentStability: updated.currentStability.toString(),
+      maxStability: updated.maxStability.toString(),
+      level: updated.level,
+    }
+  })
 }

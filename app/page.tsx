@@ -4,16 +4,17 @@ import { useGameStore } from '@/store/gameStore'
 import { HeroClickTarget } from '@/components/game/HeroClickTarget'
 import { XpBar } from '@/components/game/XpBar'
 import { StoreView } from '@/components/game/StoreView'
+import { LeaderboardView } from '@/components/leaderboard/LeaderboardView'
 import { useXpSync } from '@/hooks/useXpSync'
 import { usePassiveIncome } from '@/hooks/usePassiveIncome'
 import { useProfile } from '@/hooks/useProfile'
-import { Zap, Activity, Users, ShoppingBag } from 'lucide-react'
+import { Zap, Activity, Trophy, ShoppingBag } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { loadGameStateAction } from '@/actions/game'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GamePage() {
-  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'agents'>('mission')
+  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'rankings'>('mission')
   const applyServerState = useGameStore((s) => s.applyServerState)
 
   // Initialize game loops
@@ -74,7 +75,7 @@ export default function GamePage() {
                 <HeroClickTarget />
               </div>
 
-              <div className="flex flex-col items-center gap-2 mt-10">
+              <div className="flex flex-col items-center gap-2">
                 <span className="font-mono text-5xl font-black tracking-tighter text-white tabular-nums">
                   {currentXp.toLocaleString()} XP
                 </span>
@@ -97,17 +98,15 @@ export default function GamePage() {
             </motion.div>
           )}
 
-          {activeTab === 'agents' && (
+          {activeTab === 'rankings' && (
             <motion.div
-              key="agents"
+              key="rankings"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="w-full flex flex-col items-center justify-center py-24 text-center"
+              className="w-full px-4"
             >
-              <Users className="w-12 h-12 text-white/10 mb-4" />
-              <p className="font-display text-2xl text-white/20 uppercase tracking-[0.2em]">Roster Offline</p>
-              <p className="font-mono text-xs text-white/10 uppercase mt-2">Acquire hardware in the store to populate</p>
+              <LeaderboardView />
             </motion.div>
           )}
         </AnimatePresence>
@@ -125,10 +124,10 @@ export default function GamePage() {
             label="Mission"
           />
           <NavButton
-            active={activeTab === 'agents'}
-            onClick={() => setActiveTab('agents')}
-            icon={<Users className="w-5 h-5" />}
-            label="Garage"
+            active={activeTab === 'rankings'}
+            onClick={() => setActiveTab('rankings')}
+            icon={<Trophy className="w-5 h-5" />}
+            label="Rankings"
           />
           <div className="w-[1px] h-8 bg-primary/20 mx-2 self-center rotate-12" />
           <NavButton

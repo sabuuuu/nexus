@@ -24,7 +24,7 @@ export async function signInAnonymouslyAction() {
     .limit(1)
 
   if (!existingUser) {
-    // 3. Initialize user and game state
+    // 3. Initialize user, game state, and leaderboard entry
     await db.transaction(async (tx) => {
       await tx.insert(users).values({
         id: userId,
@@ -32,6 +32,21 @@ export async function signInAnonymouslyAction() {
       await tx.insert(gameState).values({
         userId: userId,
       })
+
+      // Link to active season immediately
+      const [activeSeason] = await tx
+        .select()
+        .from(seasons)
+        .where(eq(seasons.isActive, true))
+        .limit(1)
+
+      if (activeSeason) {
+        await tx.insert(leaderboardEntries).values({
+          userId: userId,
+          seasonId: activeSeason.id,
+          totalXp: BigInt(0),
+        })
+      }
     })
   }
 

@@ -9,6 +9,7 @@ import { QuestPanel } from '@/components/quests/QuestPanel'
 import { SettingsDialog } from '@/components/game/SettingsDialog'
 import { GlobalStabilityBar } from '@/components/game/GlobalStabilityBar'
 import { GlobalHud } from '@/components/game/GlobalHud'
+import { InventoryView } from '@/components/inventory/InventoryView'
 import { useXpSync } from '@/hooks/useXpSync'
 import { usePassiveIncome } from '@/hooks/usePassiveIncome'
 import { useProfile } from '@/hooks/useProfile'
@@ -19,7 +20,7 @@ import { loadGameStateAction } from '@/actions/game'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function GamePage() {
-  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'rankings' | 'ops'>('mission')
+  const [activeTab, setActiveTab] = useState<'mission' | 'store' | 'rankings' | 'ops' | 'storage'>('mission')
   const applyServerState = useGameStore((s) => s.applyServerState)
 
   // Initialize game loops
@@ -143,6 +144,18 @@ export default function GamePage() {
               <QuestPanel />
             </motion.div>
           )}
+
+          {activeTab === 'storage' && (
+            <motion.div
+              key="storage"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-6xl mx-auto px-4"
+            >
+              <InventoryView />
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
@@ -175,6 +188,12 @@ export default function GamePage() {
             onClick={() => setActiveTab('store')}
             icon={<ShoppingBag className="w-5 h-5" />}
             label="Market"
+          />
+          <NavButton
+            active={activeTab === 'storage'}
+            onClick={() => setActiveTab('storage')}
+            icon={<Database className="w-5 h-5" />}
+            label="Storage"
           />
         </nav>
       </div>

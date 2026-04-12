@@ -119,7 +119,12 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
                   <Card className="border-4 border-primary/40 p-8 bg-black/80 relative z-10 rounded-none w-56">
                     <CardContent className="flex flex-col items-center gap-4 p-0">
                       <div className="w-32 h-32 bg-primary/5 border border-primary/20 flex items-center justify-center">
-                        <Zap className="w-16 h-16 text-primary" />
+                        <img 
+                          src={revealedItem.iconUrl} 
+                          alt={revealedItem.name} 
+                          className="w-24 h-24 object-contain"
+                          onError={(e) => (e.target as any).src = '/chests/common.png'}
+                        />
                       </div>
                       <div className="text-center space-y-1">
                         <RarityBadge rarity={revealedItem.rarity as any} />

@@ -43,7 +43,7 @@ export function HeroClickTarget() {
         onMouseLeave={() => setIsPressed(false)}
         className={cn(
           'relative w-64 h-64 rounded-full transition-all duration-75 cursor-pointer flex items-center justify-center overflow-hidden',
-          'bg-gradient-to-b from-primary/20 to-primary/5',
+          'bg-primary/10',
           'border-2 border-primary/40 hover:border-primary',
           'shadow-[0_0_40px_hsl(var(--primary)/0.3)]',
           isPressed && 'scale-95 shadow-[0_0_20px_hsl(var(--primary)/0.5)]'

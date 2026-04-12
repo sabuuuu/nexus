@@ -35,9 +35,7 @@ export const useGameStore = create<GameStore>()(
     pendingXp: BigInt(0),
 
     registerClick() {
-      const power = BigInt(
-        computeClickPower(get().clickPower, get().equippedItems, get().prestigeCount)
-      )
+      const power = BigInt(get().clickPower)
       set((s) => ({
         totalXp: s.totalXp + power,
         currentXp: s.currentXp + power,

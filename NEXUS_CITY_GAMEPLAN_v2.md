@@ -28,7 +28,12 @@
 
 ### Concept: NEXUS CITY
 
-A gritty, neon-lit superhero metropolis at night. The aesthetic sits between a DC animated series and a cyberpunk comic — dark backgrounds, electric accent colors, cel-shaded hero art. Not cartoonish, not hyper-realistic. Stylized and bold.
+- **Theme**: Gritty, neon-lit superhero metropolis at night.
+- **Palette**: Dark backgrounds (#070B14), electric blue, solar gold, toxic green, crimson red.
+- **Gradients**: **NO GRADIENTS**. Use flat colors with low-opacity overlays or solid borders for depth.
+- **Typography**: Bebas Neue (headings), DM Sans (UI), JetBrains Mono (stats).
+
+The aesthetic sits between a DC animated series and a cyberpunk comic — dark backgrounds, electric accent colors, cel-shaded hero art. Not cartoonish, not hyper-realistic. Stylized and bold.
 
 All UI is built with **shadcn/ui** components. The shadcn theme is customised via CSS variables in `globals.css` to match the Nexus City palette. Components are used as-is where possible and extended via `className` with Tailwind utilities.
 

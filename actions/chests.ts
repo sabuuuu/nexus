@@ -96,8 +96,7 @@ export async function openChestAction(chestTierId: string) {
     where: eq(items.id, drop.itemId),
   })
 
-  // Track quest progress after successful opening
-  await trackQuestEventAction('CHEST_OPEN', 1).catch(() => {})
+  trackQuestEventAction('CHEST_OPEN', 1).catch(() => { })
 
   revalidatePath('/')
 

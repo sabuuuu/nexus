@@ -17,6 +17,7 @@ export function StoreView() {
   const { data: chests, isLoading } = useQuery({
     queryKey: ['chestTiers'],
     queryFn: () => getChestTiersAction(),
+    staleTime: 5 * 60_000, // Chest tiers rarely change
   })
 
   if (isLoading) {

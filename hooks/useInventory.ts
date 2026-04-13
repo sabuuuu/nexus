@@ -8,6 +8,6 @@ export function useInventory() {
     queryKey: ['inventory'],
     queryFn: () => getPlayerInventoryAction(),
     refetchOnWindowFocus: true,
-    staleTime: 0, // Always consider stale after discovery
+    staleTime: 30 * 1000, // Keep in memory for 30s
   })
 }

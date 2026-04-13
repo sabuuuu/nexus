@@ -1,5 +1,4 @@
 export * from './enums'
-export * from './enums'
 export * from './users'
 export * from './gameState'
 export * from './items'

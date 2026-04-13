@@ -1,10 +1,7 @@
-import { pgTable, text, bigint, integer, boolean, timestamp, unique, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, text, bigint, integer, boolean, timestamp, unique } from 'drizzle-orm/pg-core'
+import { rankTierEnum } from './enums'
 import { users } from './users'
 import { sql } from 'drizzle-orm'
-
-export const rankTierEnum = pgEnum('rank_tier', [
-  'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'NEXUS_CHAMPION',
-])
 
 export const seasons = pgTable('seasons', {
   id:       text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),

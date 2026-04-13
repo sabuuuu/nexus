@@ -14,10 +14,10 @@ const rarityConfig: Record<Rarity, { label: string; className: string }> = {
   LEGENDARY: { label: 'Legendary', className: 'border-amber-500/60 text-amber-500 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.3)] animate-pulse' },
 }
 
-export function RarityBadge({ rarity }: { rarity: Rarity }) {
+export function RarityBadge({ rarity, className: customClassName }: { rarity: Rarity; className?: string }) {
   const { label, className } = rarityConfig[rarity]
   return (
-    <Badge variant="outline" className={cn('font-mono text-[10px] uppercase tracking-widest rounded-none px-2', className)}>
+    <Badge variant="outline" className={cn('font-mono text-[10px] uppercase tracking-widest rounded-none px-2', className, customClassName)}>
       {label}
     </Badge>
   )

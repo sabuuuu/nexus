@@ -21,7 +21,7 @@ export function SettingsDialog() {
   const [email, setEmail] = useState('')
   const [isLinking, setIsLinking] = useState(false)
   const { isMuted, volume, toggleMute, setVolume } = useSettings()
-  const { data: profile, mutate: refetchProfile } = useProfile()
+  const { data: profile, refetch: refetchProfile } = useProfile()
 
   const handleLinkEmail = async () => {
     if (!email || !email.includes('@')) {

@@ -1,12 +1,14 @@
 'use client'
 
 import { useLeaderboard } from '@/hooks/useLeaderboard'
+import { useGameStore } from '@/store/gameStore'
 import { Trophy, Medal, Users, Target, Loader2, ArrowUp } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export function LeaderboardView() {
   const { data: leaderboard, isLoading } = useLeaderboard()
+  const { totalXp: localTotalXp } = useGameStore()
 
   if (isLoading) {
     return (
@@ -35,30 +37,30 @@ export function LeaderboardView() {
 
       {/* Top 3 Spotlight */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         {entries.slice(0, 3).map((entry: any, i: number) => (
-           <Card key={entry.userId} className={`
+        {entries.slice(0, 3).map((entry: any, i: number) => (
+          <Card key={entry.userId} className={`
              relative bg-black/60 rounded-none border-2 transition-all 
              ${i === 0 ? 'border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.2)] scale-105 z-10' : 'border-primary/20'}
            `}>
-             <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-               <div className={`
+            <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+              <div className={`
                  w-16 h-16 rounded-full flex items-center justify-center border-4
                  ${i === 0 ? 'border-amber-500 bg-amber-500/10' : 'border-white/10 bg-white/5'}
                `}>
-                 {i === 0 ? <Trophy className="w-8 h-8 text-amber-500" /> : <Medal className="w-8 h-8 text-white/40" />}
-               </div>
-               <div>
-                  <h3 className="font-display text-2xl text-white truncate max-w-[150px]">{entry.username || 'ANON_PILOT'}</h3>
-                  <p className="text-xs font-mono text-primary font-bold uppercase tracking-widest mt-1">
-                    {parseInt(entry.totalXp).toLocaleString()} CAREER_XP
-                  </p>
-               </div>
-               <div className="absolute top-2 left-2 px-2 py-1 bg-black/80 border border-white/10 font-mono text-xs font-bold text-white italic">
-                 #0{entry.rank}
-               </div>
-             </CardContent>
-           </Card>
-         ))}
+                {i === 0 ? <Trophy className="w-8 h-8 text-amber-500" /> : <Medal className="w-8 h-8 text-white/40" />}
+              </div>
+              <div>
+                <h3 className="font-display text-2xl text-white truncate max-w-[150px]">{entry.username || 'ANON_PILOT'}</h3>
+                <p className="text-xs font-mono text-primary font-bold uppercase tracking-widest mt-1">
+                  {parseInt(entry.totalXp).toLocaleString()} XP
+                </p>
+              </div>
+              <div className="absolute top-2 left-2 px-2 py-1 bg-black/80 border border-white/10 font-mono text-xs font-bold text-white italic">
+                #0{entry.rank}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Your Rank Pin */}
@@ -68,7 +70,9 @@ export function LeaderboardView() {
             <span className="font-display text-3xl text-primary italic"># {myRank.rank}</span>
             <div className="flex flex-col">
               <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-widest">Your Station Record</span>
-              <span className="font-mono text-white text-lg font-bold">{(parseInt(myRank.totalXp)).toLocaleString()} CAREER_XP</span>
+              <span className="font-mono text-white text-lg font-bold">
+                {localTotalXp.toLocaleString()} XP
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-2 text-primary font-bold font-mono text-xs uppercase tracking-widest animate-pulse">
@@ -80,24 +84,24 @@ export function LeaderboardView() {
       {/* Main Table */}
       <div className="space-y-2 border-l-2 border-white/5 pl-4">
         {entries.slice(3).map((entry: any) => (
-          <div 
+          <div
             key={entry.userId}
             className="flex justify-between items-center py-4 px-6 bg-white/5 border border-white/5 hover:border-primary/20 hover:bg-white/10 transition-all relative group"
           >
             <div className="flex items-center gap-8">
-               <span className="font-mono text-xl text-white/20 font-black italic min-w-[40px] group-hover:text-primary transition-colors">
-                 {entry.rank.toString().padStart(2, '0')}
-               </span>
-               <div className="flex flex-col">
-                 <span className="text-lg font-display text-white tracking-widest">{entry.username || 'ANON_PILOT'}</span>
-                 <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">ID: {entry.userId.slice(0, 8)}</span>
-               </div>
+              <span className="font-mono text-xl text-white/20 font-black italic min-w-[40px] group-hover:text-primary transition-colors">
+                {entry.rank.toString().padStart(2, '0')}
+              </span>
+              <div className="flex flex-col">
+                <span className="text-lg font-display text-white tracking-widest">{entry.username || 'ANON_PILOT'}</span>
+                <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">ID: {entry.userId.slice(0, 8)}</span>
+              </div>
             </div>
             <div className="text-right">
-               <span className="font-mono text-lg text-primary font-bold tabular-nums">
-                 {parseInt(entry.totalXp).toLocaleString()} XP
-               </span>
-               <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest mt-1 italic">Total Protocol</p>
+              <span className="font-mono text-lg text-primary font-bold tabular-nums">
+                {parseInt(entry.totalXp).toLocaleString()} XP
+              </span>
+              <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest mt-1 italic">Total Protocol</p>
             </div>
           </div>
         ))}

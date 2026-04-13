@@ -46,7 +46,7 @@ export default function GamePage() {
   }, [applyServerState])
 
   const { data: profile } = useProfile()
-  const { clickPower, passiveRate, currentXp } = useGameStore()
+  const { clickPower, passiveRate, currentXp, totalXp } = useGameStore()
 
   return (
     <div className="flex flex-col h-screen bg-[#070B14] relative overflow-y-auto overflow-x-hidden">
@@ -99,7 +99,7 @@ export default function GamePage() {
 
               <div className="flex flex-col items-center gap-2 mt-6">
                 <span className="font-mono text-5xl font-black tracking-tighter text-white tabular-nums">
-                  {currentXp.toLocaleString()} XP
+                  {totalXp.toLocaleString()} XP
                 </span>
                 <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.4em]">
                   Tap to generate energy surge

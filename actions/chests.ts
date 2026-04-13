@@ -6,6 +6,7 @@ import { eq, and } from 'drizzle-orm'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { rollLoot } from '@/lib/game/loot'
 import { trackQuestEventAction } from './quests'
+import { revalidatePath } from 'next/cache'
 
 export async function getChestTiersAction() {
   return db.query.chestTiers.findMany({
@@ -97,6 +98,8 @@ export async function openChestAction(chestTierId: string) {
 
   // Track quest progress after successful opening
   await trackQuestEventAction('CHEST_OPEN', 1).catch(() => {})
+
+  revalidatePath('/')
 
   return { item: droppedItem, isDuplicate: result.isDuplicate }
 }

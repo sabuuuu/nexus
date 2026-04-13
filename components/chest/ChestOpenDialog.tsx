@@ -73,16 +73,17 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
             {!revealedItem ? (
               <motion.div
                 key="chest"
-                initial={{ scale: 0.8, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 1.5, opacity: 0, filter: 'blur(20px)' }}
+                exit={{ scale: 1.1, opacity: 0, filter: 'blur(10px)' }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
                 className="relative size-64 flex items-center justify-center"
               >
                 {/* Visual pulse for pending state */}
                 {isPending && (
                   <motion.div
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.4, 0.1] }}
-                    transition={{ repeat: Infinity, duration: 1 }}
+                    animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.3, 0.1] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                     className="absolute inset-0 bg-primary rounded-full blur-3xl"
                   />
                 )}
@@ -92,8 +93,8 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
                     src={`/chests/${chestName?.toLowerCase() || 'common'}.png`}
                     alt="Data Crate"
                     className={cn(
-                      "size-64 object-contain mix-blend-screen transition-all",
-                      isPending && "animate-bounce scale-110"
+                      "size-64 object-contain mix-blend-screen transition-all duration-1000",
+                      isPending && "animate-pulse scale-105"
                     )}
                   />
                 </div>
@@ -101,9 +102,9 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
             ) : (
               <motion.div
                 key="item"
-                initial={{ scale: 0, rotate: -10, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 150, damping: 10 }}
+                initial={{ scale: 0.8, opacity: 0, y: 10 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                 className="flex flex-col items-center gap-6"
               >
                 <div className="relative">
@@ -119,9 +120,9 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
                   <Card className="border-4 border-primary/40 p-8 bg-black/80 relative z-10 rounded-none w-56">
                     <CardContent className="flex flex-col items-center gap-4 p-0">
                       <div className="w-32 h-32 bg-primary/5 border border-primary/20 flex items-center justify-center">
-                        <img 
-                          src={revealedItem.iconUrl} 
-                          alt={revealedItem.name} 
+                        <img
+                          src={revealedItem.iconUrl}
+                          alt={revealedItem.name}
                           className="w-24 h-24 object-contain"
                           onError={(e) => (e.target as any).src = '/chests/common.png'}
                         />
@@ -175,7 +176,7 @@ export function ChestOpenDialog({ chestTierId, chestName, xpCost, open, onOpenCh
             <Button
               size="lg"
               variant="outline"
-              className="w-full h-14 font-display text-xl tracking-[0.2em] rounded-none border-primary text-primary hover:bg-primary hover:text-black"
+              className="w-full h-14 font-display text-xl tracking-[0.2em] rounded-none border-primary text-primary cursor-pointer"
               onClick={handleClose}
             >
               COLLECT ASSET

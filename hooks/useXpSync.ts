@@ -19,6 +19,7 @@ export function useXpSync() {
       if (data) {
         applyServerState({ 
           totalXp: BigInt(data.totalXp), 
+          currentXp: BigInt(data.currentXp),
           level: data.level 
         })
       }

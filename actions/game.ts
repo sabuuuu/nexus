@@ -124,7 +124,11 @@ export async function syncXpAction(pendingXpStr: string) {
     trackQuestEventAction('LEVEL_REACH', final.level, true),
   ]).catch((err) => console.error('Quest track error:', err))
 
-  return { totalXp: final.totalXp.toString(), level: final.level }
+  return { 
+    totalXp: final.totalXp.toString(), 
+    currentXp: final.currentXp.toString(), 
+    level: final.level 
+  }
 }
 
 export async function loadGameStateAction() {

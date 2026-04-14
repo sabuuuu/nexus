@@ -19,7 +19,7 @@ export async function getLeaderboardAction(page = 0) {
   // Use raw SQL for RANK() window function which Drizzle query builder doesn't support as easily
   const entries = (await db.execute(sql`
     SELECT
-      RANK() OVER (ORDER BY le.total_xp DESC)::int AS rank,
+      RANK() OVER (ORDER BY le.total_xp::bigint DESC)::int AS rank,
       u.id                                          AS "userId",
       u.username,
       le.total_xp::text                             AS "totalXp",
@@ -27,7 +27,7 @@ export async function getLeaderboardAction(page = 0) {
     FROM leaderboard_entries le
     JOIN users u ON u.id = le.user_id
     WHERE le.season_id = ${activeSeason.id}
-    ORDER BY le.total_xp DESC
+    ORDER BY le.total_xp::bigint DESC
     LIMIT ${PAGE_SIZE} OFFSET ${page * PAGE_SIZE}
   `)) as any[]
 
@@ -42,7 +42,7 @@ export async function getLeaderboardAction(page = 0) {
         SELECT 
           user_id,
           total_xp,
-          RANK() OVER (ORDER BY total_xp DESC)::int as rank
+          RANK() OVER (ORDER BY total_xp::bigint DESC)::int as rank
         FROM leaderboard_entries
         WHERE season_id = ${activeSeason.id}
       )

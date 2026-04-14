@@ -1,7 +1,9 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useGameStore } from '@/store/gameStore'
+import { useProfile } from '@/hooks/useProfile'
 import { Trophy, Medal, Users, Target, Loader2, ArrowUp } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -9,6 +11,32 @@ import { Skeleton } from '@/components/ui/skeleton'
 export function LeaderboardView() {
   const { data: leaderboard, isLoading } = useLeaderboard()
   const { totalXp: localTotalXp } = useGameStore()
+  const { data: profile } = useProfile()
+
+  const entries = useMemo(() => {
+    const raw = leaderboard?.entries || []
+    // Hydrate the user's entry with live local XP
+    const hydrated = raw.map(e => 
+      (profile && e.userId === profile.id) 
+        ? { ...e, totalXp: localTotalXp.toString() } 
+        : e
+    )
+    // Re-sort descending based on newly updated XP
+    return [...hydrated].sort((a, b) => {
+      const xpA = BigInt(a.totalXp)
+      const xpB = BigInt(b.totalXp)
+      if (xpB > xpA) return 1
+      if (xpB < xpA) return -1
+      return 0
+    })
+  }, [leaderboard?.entries, localTotalXp, profile])
+
+  const liveMyRank = useMemo(() => {
+    if (!profile) return leaderboard?.myRank?.rank
+    const index = entries.findIndex(e => e.userId === profile.id)
+    if (index !== -1) return index + 1
+    return leaderboard?.myRank?.rank
+  }, [entries, profile, leaderboard?.myRank])
 
   if (isLoading) {
     return (
@@ -20,7 +48,6 @@ export function LeaderboardView() {
     )
   }
 
-  const entries = leaderboard?.entries || []
   const myRank = leaderboard?.myRank
 
   return (
@@ -52,11 +79,11 @@ export function LeaderboardView() {
               <div>
                 <h3 className="font-display text-2xl text-white truncate max-w-[150px]">{entry.username || 'ANON_PILOT'}</h3>
                 <p className="text-xs font-mono text-primary font-bold uppercase tracking-widest mt-1">
-                  {parseInt(entry.totalXp).toLocaleString()} XP
+                  {(profile && entry.userId === profile.id) ? localTotalXp.toLocaleString() : parseInt(entry.totalXp).toLocaleString()} XP
                 </p>
               </div>
               <div className="absolute top-2 left-2 px-2 py-1 bg-black/80 border border-white/10 font-mono text-xs font-bold text-white italic">
-                #0{entry.rank}
+                #0{i + 1}
               </div>
             </CardContent>
           </Card>
@@ -67,7 +94,7 @@ export function LeaderboardView() {
       {myRank && (
         <div className="bg-primary/20 border-ly border-t-2 border-b-2 border-primary/40 py-4 px-6 flex justify-between items-center group hover:bg-primary/30 transition-all">
           <div className="flex items-center gap-6">
-            <span className="font-display text-3xl text-primary italic"># {myRank.rank}</span>
+            <span className="font-display text-3xl text-primary italic"># {liveMyRank}</span>
             <div className="flex flex-col">
               <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-widest">Your Station Record</span>
               <span className="font-mono text-white text-lg font-bold">
@@ -83,14 +110,14 @@ export function LeaderboardView() {
 
       {/* Main Table */}
       <div className="space-y-2 border-l-2 border-white/5 pl-4">
-        {entries.slice(3).map((entry: any) => (
+        {entries.slice(3).map((entry: any, index: number) => (
           <div
             key={entry.userId}
             className="flex justify-between items-center py-4 px-6 bg-white/5 border border-white/5 hover:border-primary/20 hover:bg-white/10 transition-all relative group"
           >
             <div className="flex items-center gap-8">
               <span className="font-mono text-xl text-white/20 font-black italic min-w-[40px] group-hover:text-primary transition-colors">
-                {entry.rank.toString().padStart(2, '0')}
+                {(index + 4).toString().padStart(2, '0')}
               </span>
               <div className="flex flex-col">
                 <span className="text-lg font-display text-white tracking-widest">{entry.username || 'ANON_PILOT'}</span>
@@ -99,7 +126,7 @@ export function LeaderboardView() {
             </div>
             <div className="text-right">
               <span className="font-mono text-lg text-primary font-bold tabular-nums">
-                {parseInt(entry.totalXp).toLocaleString()} XP
+                {(profile && entry.userId === profile.id) ? localTotalXp.toLocaleString() : parseInt(entry.totalXp).toLocaleString()} XP
               </span>
               <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest mt-1 italic">Total Protocol</p>
             </div>

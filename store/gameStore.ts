@@ -21,6 +21,7 @@ interface GameStore {
 
   registerClick: () => void
   flushPendingXp: () => bigint
+  rollbackPendingXp: (amount: bigint) => void
   applyServerState: (partial: Partial<GameStore>) => void
 }
 
@@ -54,16 +55,34 @@ export const useGameStore = create<GameStore>()(
 
     flushPendingXp() {
       const pending = get().pendingXp
+      if (pending === BigInt(0)) return BigInt(0)
       set({ pendingXp: BigInt(0) })
       return pending
     },
 
+    rollbackPendingXp(amount) {
+      set((s) => ({
+        pendingXp: s.pendingXp + amount
+      }))
+    },
+
     applyServerState(partial) {
-      const equippedItems = partial.equippedItems ?? get().equippedItems
-      const prestigeCount = partial.prestigeCount ?? get().prestigeCount
-      const baseClickPower = partial.clickPower ?? get().clickPower
+      const state = get()
+      const equippedItems = partial.equippedItems ?? state.equippedItems
+      const prestigeCount = partial.prestigeCount ?? state.prestigeCount
+      const baseClickPower = partial.clickPower ?? state.clickPower
+      
+      // CRITICAL: Merge server authoritative state with local unsynced progress
+      // to prevent "rubber banding" or losing clicks that happened during flight.
+      const totalXp = partial.totalXp !== undefined ? partial.totalXp + state.pendingXp : state.totalXp
+      const currentXp = partial.currentXp !== undefined ? partial.currentXp + state.pendingXp : state.currentXp
+      const level = partial.totalXp !== undefined ? levelFromTotalXp(totalXp) : (partial.level ?? state.level)
+
       set({
         ...partial,
+        totalXp,
+        currentXp,
+        level,
         clickPower: computeClickPower(baseClickPower, equippedItems, prestigeCount),
         passiveRate: computePassiveRate(equippedItems, prestigeCount),
       })

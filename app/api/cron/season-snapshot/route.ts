@@ -28,7 +28,7 @@ export async function GET() {
       SELECT 
         id, 
         total_xp,
-        RANK() OVER (ORDER BY total_xp DESC)::int as rank
+        RANK() OVER (ORDER BY total_xp::bigint DESC)::int as rank
       FROM leaderboard_entries
       WHERE season_id = ${activeSeason.id}
     )

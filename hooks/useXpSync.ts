@@ -9,9 +9,10 @@ import { toast } from 'sonner'
 const SYNC_INTERVAL_MS = 5_000
 
 export function useXpSync() {
-  const flushPendingXp   = useGameStore((s) => s.flushPendingXp)
-  const applyServerState = useGameStore((s) => s.applyServerState)
-  const intervalRef      = useRef<ReturnType<typeof setInterval> | null>(null)
+  const flushPendingXp    = useGameStore((s) => s.flushPendingXp)
+  const rollbackPendingXp = useGameStore((s) => s.rollbackPendingXp)
+  const applyServerState  = useGameStore((s) => s.applyServerState)
+  const intervalRef       = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const syncMutation = useMutation({
     mutationFn: (pending: bigint) => syncXpAction(pending.toString()),
@@ -24,9 +25,10 @@ export function useXpSync() {
         })
       }
     },
-    onError: (error) => {
+    onError: (error, pending) => {
       console.error('XP Sync Error:', error)
-      toast.error('Sync failed — your progress is safe locally.')
+      rollbackPendingXp(pending)
+      toast.error('Sync failed — progress restored locally.')
     },
   })
 

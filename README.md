@@ -3,7 +3,7 @@
 > *A gritty, neon-lit superhero metropolis idle clicker game.*
 
 Nexus City is a prestige idle clicker game set in a sprawling cyberpunk metropolis. Click to generate energy surges, level up your operator profile, open encrypted crates from the Black Market, and compete for dominance on the Global Stability Rankings. Season-based competition, real-time world boss raids, and a deep collectible system keep the grind alive.
-
+    
 ---
 
 ## 🎮 Core Gameplay
